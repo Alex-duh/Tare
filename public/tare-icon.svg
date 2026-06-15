@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="ig" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#833ab4"/>
+      <stop offset="50%"  stop-color="#e1306c"/>
+      <stop offset="100%" stop-color="#fcb045"/>
+    </linearGradient>
+  </defs>
+  <!-- Beam -->
+  <rect x="3" y="10" width="26" height="2.5" rx="1.25" fill="url(#ig)"/>
+  <!-- Left string -->
+  <rect x="6.25" y="12.5" width="1.5" height="5" rx="0.75" fill="url(#ig)"/>
+  <!-- Right string -->
+  <rect x="24.25" y="12.5" width="1.5" height="5" rx="0.75" fill="url(#ig)"/>
+  <!-- Left pan -->
+  <rect x="2" y="17.5" width="9.5" height="2.5" rx="1.25" fill="url(#ig)"/>
+  <!-- Right pan -->
+  <rect x="20.5" y="17.5" width="9.5" height="2.5" rx="1.25" fill="url(#ig)"/>
+  <!-- Center post -->
+  <rect x="14.75" y="12.5" width="2.5" height="9" rx="1.25" fill="url(#ig)"/>
+  <!-- Fulcrum triangle -->
+  <polygon points="16,21.5 11,28.5 21,28.5" fill="url(#ig)"/>
+  <!-- Pivot dot -->
+  <circle cx="16" cy="11.25" r="2" fill="url(#ig)"/>
+</svg>

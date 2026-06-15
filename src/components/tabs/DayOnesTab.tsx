@@ -77,6 +77,13 @@ export default function DayOnesTab({ following, followers, hasTimestamps }: Prop
         {mutuals.length === 0 ? (
           <p className="text-white/30 text-sm">{t('results.dayones.empty_mutuals')}</p>
         ) : (
+          <>
+            <p className="text-white/20 text-xs flex items-center gap-1 mb-2">
+              <svg className="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+              Tap any username to open their Instagram profile
+            </p>
           <div className="flex flex-col gap-2 max-h-[500px] overflow-y-auto pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(131,58,180,0.3) transparent' }}>
             {mutuals.map((user, i) => {
               const { years, days, date } = formatDuration(user.timestamp)
@@ -131,6 +138,7 @@ export default function DayOnesTab({ following, followers, hasTimestamps }: Prop
               )
             })}
           </div>
+          </>
         )}
       </section>
 

@@ -13,3 +13,15 @@ node_modules/
 dist/
 .env
 .env.local
+.vercel
+
+# Claude / personal
+CLAUDE.md
+resumeskills.md
+.claude/
+posthog-setup-report.md
+
+# macOS
+.DS_Store
+src/.DS_Store
+public/.DS_Store

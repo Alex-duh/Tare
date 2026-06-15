@@ -4,7 +4,7 @@
     "privacy": "Tus datos nunca salen de tu navegador"
   },
   "landing": {
-    "headline": "Pon a cero tus seguidores.",
+    "headline": "Elimina el peso muerto.",
     "sub": "Descubre quién no te sigue de vuelta en Instagram. Sin inicio de sesión. Sin servidores. Todo corre en tu navegador.",
     "upload_title": "Suelta tu exportación de Instagram aquí",
     "upload_sub": "Acepta archivo .zip o archivos individuales followers_1.json + following.json",
@@ -15,12 +15,12 @@
     "how_sub": "Instagram te permite descargar tus propios datos. Aquí exactamente qué descargar.",
     "steps": {
       "1": "Abre Instagram → toca tu perfil → toca ☰ → toca Centro de Cuentas",
-      "2": "Toca \"Tu información y permisos\" → \"Descargar tu información\"",
-      "3": "Toca \"Descargar o transferir información\" → selecciona tu cuenta → \"Parte de tu información\"",
-      "4": "Desplázate a \"Conexiones\" → marca SOLO \"Seguidores y seguidos\" → desmarca todo lo demás",
-      "5": "Elige \"Descargar al dispositivo\" → establece Formato en JSON y Rango de fechas en Todo el tiempo → toca Descargar"
+      "2": "Toca \"Tu información y permisos\" → \"Exportar tu información\"",
+      "3": "Toca \"Crear exportación\" → selecciona tu cuenta → \"Exportar al dispositivo\"",
+      "4": "Toca \"Personalizar información\" → selecciona SOLO \"Seguidores y seguidos\" → desmarca todo lo demás → establece Rango de fechas en Último año → establece Formato en JSON",
+      "5": "Toca \"Iniciar exportación\" — Instagram te enviará un correo cuando esté listo. Descarga el zip y suéltalo arriba."
     },
-    "steps_note": "Instagram te enviará un correo cuando esté listo (usualmente minutos). Descarga el .zip y suéltalo arriba.",
+    "steps_note": "La exportación suele tardar unos minutos.",
     "analyzing": "Analizando tus datos…"
   },
   "results": {
@@ -52,8 +52,8 @@
       "loyalty_badge": "Top 10 Día Uno",
       "since": "Mutuos desde",
       "duration": "{{years}} años, {{days}} días",
-      "betrayed_title": "Te seguían desde el principio — ya no te siguen",
-      "betrayed_sub": "Personas a las que seguiste desde el comienzo y que eventualmente se fueron.",
+      "betrayed_title": "Seguidos temprano — aún no te siguen",
+      "betrayed_sub": "Personas a las que empezaste a seguir desde el principio que aún no te han seguido de vuelta.",
       "no_timestamps": "Día Uno requiere tus datos de Instagram en formato JSON.",
       "no_timestamps_sub": "Vuelve a descargar tu exportación y elige JSON como formato para desbloquear esta pestaña.",
       "empty_mutuals": "No se encontraron seguidores mutuos.",

@@ -1,71 +1,75 @@
-# RatioFixer
+# Tare
 
-Find out who doesn't follow you back on Instagram — and who you haven't followed back.
+**Zero out the dead weight.**
 
-## Requirements
+A client-side Instagram follow analytics tool. Upload your official Instagram data export and instantly see who doesn't follow you back, who your most loyal followers are, and how your follower count has grown over time. No login. No server. Your data never leaves your device.
 
-- Python 3
-- [BeautifulSoup4](https://pypi.org/project/beautifulsoup4/)
+**Live:** [usetare.vercel.app](https://usetare.vercel.app)
 
-Install the dependency:
+---
+
+## Features
+
+- **Not Following Back** — searchable, sortable list of everyone you follow who doesn't follow back, with a per-user "done" tracker so you can hide accounts as you unfollow them
+- **Fans** — people who follow you that you haven't followed back
+- **Day Ones** — your oldest mutuals ranked by how long you've followed each other, plus early follows who still haven't followed back
+- **Growth Graph** — cumulative follower/following chart over time with interactive hover tooltips and PNG export
+- **Share Card** — severity-rated 1080×1080 PNG (ur cooked / yikes... / could be worse / not bad) with dynamic color themes
+- **Changes Over Time** — IndexedDB snapshot history; upload again weeks later to see exactly who unfollowed you or followed you since
+- **EN / ES** — full bilingual support via react-i18next
+- **Zero data upload** — all parsing runs in the browser via JSZip; nothing is sent to any server
+
+---
+
+## Stack
+
+| Layer | Tech |
+|---|---|
+| Framework | React 18 + Vite + TypeScript |
+| Styling | Tailwind CSS |
+| Routing | React Router v6 |
+| ZIP parsing | JSZip |
+| Local persistence | IndexedDB via `idb` |
+| i18n | react-i18next |
+| Analytics | PostHog (custom events) + Vercel Analytics |
+| Deployment | Vercel |
+
+---
+
+## How it works
+
+Instagram lets you export your own data as a ZIP file containing JSON files for your followers and following lists. Tare reads those files entirely in the browser — no server ever sees your data.
+
+The export has two different JSON schemas (followers use one format, following uses another with a different field structure). Tare handles both, plus HTML fallback for older exports.
+
+---
+
+## Running locally
 
 ```bash
-pip install beautifulsoup4
+npm install
+npm run dev
 ```
 
-## Step 1 — Download your Instagram data
-
-1. Open Instagram and go to your **Profile**
-2. Tap the **menu (three lines)** in the top right
-3. Go to **Account Center**
-4. Tap **Your information and permissions**
-5. Tap **Download your information**
-6. Tap **Download or transfer information**
-7. Select your account, then choose **Some of your information**
-8. Scroll down and **uncheck every box** except **Followers** and **Following**
-9. Tap **Download to device**
-10. Set the date range to **All time**
-11. Set the format to **HTML**
-12. Request the download — Instagram will notify you when it's ready
-
-Once downloaded, unzip the file. Inside you'll find `followers_1.html` and `following.html`.
-
-## Step 2 — Set up the folder
-
-Place these three files in the **same folder**:
+Requires a `.env.local` with PostHog credentials (analytics only — the app works without it):
 
 ```
-RatioFixer/
-├── compare.py
-├── followers_1.html
-└── following.html
+VITE_POSTHOG_PROJECT_TOKEN=your_token
+VITE_POSTHOG_HOST=https://us.i.posthog.com
 ```
 
-## Step 3 — Run it
+## Deploy
 
 ```bash
-python3 compare.py
+npx vercel@latest --prod
 ```
 
-You'll see:
+---
 
-```
-========================================
-Total Followers: 1059
-Total Following: 1374
-========================================
+## Privacy
 
-[!] People who DON'T follow you back (454):
-  - username1
-  - username2
-  ...
+Tare processes everything locally. The only external calls are:
+- PostHog analytics events (anonymous, no PII — just counts and aggregate stats)
+- Vercel Analytics (anonymous page views)
 
-[!] People you don't follow back (108):
-  - username3
-  - username4
-  ...
-```
-
-## Note on counts
-
-Your follower/following counts may differ slightly from what the Instagram app shows. This is normal — the HTML export is a snapshot from when you requested the download, and the live count reflects any changes since then.
+No Instagram credentials are ever requested or stored.

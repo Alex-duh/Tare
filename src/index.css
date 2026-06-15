@@ -33,3 +33,7 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(131, 58, 180, 0.5);
 }
+
+@keyframes ping {
+  75%, 100% { transform: scale(2); opacity: 0; }
+}

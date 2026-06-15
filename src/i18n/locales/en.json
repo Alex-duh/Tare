@@ -4,7 +4,7 @@
     "privacy": "Your data never leaves your browser"
   },
   "landing": {
-    "headline": "Zero out your followers.",
+    "headline": "Zero out the dead weight.",
     "sub": "Find who's not following you back on Instagram. No login. No server. Runs entirely in your browser.",
     "upload_title": "Drop your Instagram export here",
     "upload_sub": "Accepts .zip export or individual followers_1.json + following.json files",
@@ -15,12 +15,12 @@
     "how_sub": "Instagram lets you download your own data. Here's exactly what to grab.",
     "steps": {
       "1": "Open Instagram → tap your profile → tap ☰ → tap Account Center",
-      "2": "Tap \"Your information and permissions\" → \"Download your information\"",
-      "3": "Tap \"Download or transfer information\" → select your account → \"Some of your information\"",
-      "4": "Scroll to \"Connections\" → check ONLY \"Followers and following\" → uncheck everything else",
-      "5": "Choose \"Download to device\" → set Format to JSON and Date range to All time → tap Download"
+      "2": "Tap \"Your information and permissions\" → \"Export your information\"",
+      "3": "Tap \"Create export\" → select your account → \"Export to device\"",
+      "4": "Tap \"Customize Information\" → select ONLY \"Followers and following\" → uncheck everything else → set Date range to Last year → set Format to JSON",
+      "5": "Tap \"Start export\" — Instagram will email you when it's ready. Download the zip file and drop it above."
     },
-    "steps_note": "Instagram will email you when it's ready (usually minutes). Download the .zip and drop it above."
+    "steps_note": "Export usually takes a few minutes."
   },
   "results": {
     "tab_overview": "Overview",
@@ -51,12 +51,12 @@
       "loyalty_badge": "Top 10 Day One",
       "since": "Mutual since",
       "duration": "{{years}} years, {{days}} days",
-      "betrayed_title": "Followed early — no longer following you",
-      "betrayed_sub": "People you followed from the beginning who eventually left.",
+      "betrayed_title": "Early follows — still don't follow back",
+      "betrayed_sub": "People you started following early on who still haven't followed you back.",
       "no_timestamps": "Day Ones requires your Instagram data in JSON format.",
       "no_timestamps_sub": "Re-download your export and choose JSON as the format to unlock this tab.",
       "empty_mutuals": "No mutual followers found.",
-      "empty_betrayed": "None of your early follows left — loyalty appreciated."
+      "empty_betrayed": "All your early follows have followed you back — solid."
     },
     "changes": {
       "title": "Changes Over Time",

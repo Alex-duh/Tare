@@ -1,6 +1,8 @@
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
+import { usePostHog } from '@posthog/react'
 import UploadZone from '../components/UploadZone'
 import GradientText from '../components/GradientText'
 import Footer from '../components/Footer'
@@ -11,40 +13,45 @@ import { saveSnapshot, getLatestSnapshot } from '../lib/db'
 import { trackAnalysis } from '../lib/analytics'
 import type { ParsedData } from '../types'
 
-// Placeholder screenshot component — scales gracefully to any image size
-function StepScreenshot({ src, alt }: { src: string; alt: string }) {
+function StepScreenshot({ srcs, alt }: { srcs: string[]; alt: string }) {
+  if (srcs.length === 0) return null
   return (
-    <div
-      className="rounded-xl overflow-hidden flex-shrink-0"
-      style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
-    >
-      <img
-        src={src}
-        alt={alt}
-        className="w-full h-auto object-contain max-h-64"
-        onError={(e) => {
-          // If screenshot not yet added, show a placeholder
-          const target = e.currentTarget
-          target.style.display = 'none'
-          const parent = target.parentElement!
-          parent.innerHTML = `<div style="height:160px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.2);font-size:13px;">Screenshot coming soon</div>`
-        }}
-      />
+    <div className={`grid gap-2 p-2 pt-0 ${srcs.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+      {srcs.map((src, i) => (
+        <div
+          key={src}
+          className="rounded-xl overflow-hidden"
+          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+        >
+          <img
+            src={src}
+            alt={`${alt} ${i + 1}`}
+            className="w-full h-auto object-contain max-h-64"
+            onError={(e) => {
+              const target = e.currentTarget
+              target.style.display = 'none'
+              const parent = target.parentElement!
+              parent.innerHTML = `<div style="height:120px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.15);font-size:12px;">Coming soon</div>`
+            }}
+          />
+        </div>
+      ))}
     </div>
   )
 }
 
 const STEPS = [
-  { key: '1', img: '/screenshots/step-1-account-center.png' },
-  { key: '2', img: '/screenshots/step-2-download-info.png' },
-  { key: '3', img: '/screenshots/step-3-select-type.png' },
-  { key: '4', img: '/screenshots/step-4-select-data.png' },
-  { key: '5', img: '/screenshots/step-5-format-json.png' },
+  { key: '1', srcs: ['/screenshots/account_center_button.jpg'] },
+  { key: '2', srcs: ['/screenshots/your_information_and_permissions_button.jpg', '/screenshots/export_your_information_button.png'] },
+  { key: '3', srcs: ['/screenshots/create_export_button.jpg'] },
+  { key: '4', srcs: ['/screenshots/correct_settings_example.jpg'] },
+  { key: '5', srcs: [] },
 ]
 
 export default function Landing() {
   const navigate = useNavigate()
   const { t } = useTranslation()
+  const posthog = usePostHog()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [showPrivacy, setShowPrivacy] = useState(false)
@@ -58,7 +65,11 @@ export default function Landing() {
         let parsed: ParsedData
 
         const zipFile = fileArr.find((f) => f.name.endsWith('.zip'))
+        let uploadMethod: 'zip' | 'json' | 'html'
+
         if (zipFile) {
+          uploadMethod = 'zip'
+          posthog?.capture('file_upload_started', { upload_method: uploadMethod })
           parsed = await parseZip(zipFile)
         } else {
           const jsonFollowerFiles = fileArr.filter((f) =>
@@ -67,6 +78,8 @@ export default function Landing() {
           const jsonFollowingFile = fileArr.find((f) => /following\.json$/i.test(f.name))
 
           if (jsonFollowerFiles.length > 0 && jsonFollowingFile) {
+            uploadMethod = 'json'
+            posthog?.capture('file_upload_started', { upload_method: uploadMethod })
             parsed = await parseJSONFiles(jsonFollowerFiles, jsonFollowingFile)
           } else {
             const htmlFollowerFiles = fileArr.filter((f) =>
@@ -74,6 +87,8 @@ export default function Landing() {
             )
             const htmlFollowingFile = fileArr.find((f) => /following\.html$/i.test(f.name))
             if (htmlFollowerFiles.length > 0 && htmlFollowingFile) {
+              uploadMethod = 'html'
+              posthog?.capture('file_upload_started', { upload_method: uploadMethod })
               parsed = await parseHTMLFiles(htmlFollowerFiles, htmlFollowingFile)
             } else {
               throw new Error('no_valid_files')
@@ -93,6 +108,13 @@ export default function Landing() {
           followingUsernames,
         })
 
+        posthog?.capture('analysis_completed', {
+          follower_count: parsed.followers.length,
+          following_count: parsed.following.length,
+          has_timestamps: parsed.hasTimestamps,
+          is_first_upload: !latest,
+        })
+
         await trackAnalysis()
 
         navigate('/results', {
@@ -104,12 +126,14 @@ export default function Landing() {
       } catch (err) {
         const msg = err instanceof Error ? err.message : 'generic'
         const key = ['no_valid_files', 'invalid_json'].includes(msg) ? msg : 'generic'
+        posthog?.captureException(err, { error_key: key })
+        posthog?.capture('analysis_failed', { error_key: key })
         setError(t(`errors.${key}`))
       } finally {
         setLoading(false)
       }
     },
-    [navigate, t]
+    [navigate, t, posthog]
   )
 
   return (
@@ -117,7 +141,7 @@ export default function Landing() {
       {/* Nav */}
       <nav className="relative z-10 flex items-center justify-between px-6 py-4">
         <div className="flex items-center gap-2">
-          <GradientText className="text-xl font-bold tracking-tight">Tare</GradientText>
+          <Link to="/"><GradientText className="text-xl font-bold tracking-tight cursor-pointer">Tare</GradientText></Link>
         </div>
         <div className="flex items-center gap-3">
           <LanguageToggle />
@@ -184,23 +208,15 @@ export default function Landing() {
               <div className="flex items-start gap-4 p-5">
                 <div
                   className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5"
-                  style={{
-                    background: 'linear-gradient(135deg, #833ab4, #fd1d1d)',
-                  }}
+                  style={{ background: 'linear-gradient(135deg, #833ab4, #fd1d1d)' }}
                 >
                   {i + 1}
                 </div>
                 <p className="text-white/70 text-sm leading-relaxed">
                   {t(`landing.steps.${step.key}`)}
-                  {i === 4 && (
-                    <span className="ml-1 px-1.5 py-0.5 rounded text-xs font-semibold"
-                      style={{ background: 'rgba(252,176,69,0.2)', color: '#fcb045' }}>
-                      JSON — not HTML
-                    </span>
-                  )}
                 </p>
               </div>
-              <StepScreenshot src={step.img} alt={`Step ${i + 1}`} />
+              <StepScreenshot srcs={step.srcs} alt={`Step ${i + 1}`} />
             </div>
           ))}
         </div>

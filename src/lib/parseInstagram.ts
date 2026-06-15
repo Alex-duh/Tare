@@ -2,6 +2,9 @@ import JSZip from 'jszip'
 import type { IGUser, ParsedData } from '../types'
 
 interface RawEntry {
+  // followers_1.json: title is empty, username lives in string_list_data[0].value
+  // following.json:   title IS the username, string_list_data has href + timestamp but NO value
+  title?: string
   string_list_data?: Array<{
     value?: string
     href?: string
@@ -9,16 +12,43 @@ interface RawEntry {
   }>
 }
 
+// Handles flat arrays, { relationships_following: [...] }, or any wrapped object
+function extractEntries(raw: unknown): RawEntry[] {
+  if (Array.isArray(raw)) return raw as RawEntry[]
+  if (raw !== null && typeof raw === 'object') {
+    const obj = raw as Record<string, unknown>
+    // Fast path: known key
+    if (Array.isArray(obj.relationships_following)) return obj.relationships_following as RawEntry[]
+    // Fallback: first non-empty array value in the object
+    for (const val of Object.values(obj)) {
+      if (Array.isArray(val) && val.length > 0) return val as RawEntry[]
+    }
+    // One level deeper (some exports double-wrap)
+    for (const val of Object.values(obj)) {
+      if (val !== null && typeof val === 'object' && !Array.isArray(val)) {
+        const inner = extractEntries(val)
+        if (inner.length > 0) return inner
+      }
+    }
+  }
+  return []
+}
+
 function parseJSONEntries(entries: RawEntry[]): IGUser[] {
   const users: IGUser[] = []
   for (const entry of entries) {
     const data = entry.string_list_data?.[0]
-    if (!data?.value) continue
-    users.push({
-      username: data.value,
-      href: data.href ?? `https://www.instagram.com/${data.value}/`,
-      timestamp: data.timestamp ?? null,
-    })
+    // followers_1.json: value field present
+    // following.json:   no value field — username is in entry.title instead
+    const username = data?.value || entry.title || ''
+    if (!username) continue
+
+    let href = data?.href ?? `https://www.instagram.com/${username}/`
+    // Normalise _u/ redirects to direct profile URLs
+    href = href.replace('instagram.com/_u/', 'instagram.com/')
+    if (!href.endsWith('/')) href += '/'
+
+    users.push({ username, href, timestamp: data?.timestamp ?? null })
   }
   return users
 }
@@ -27,44 +57,50 @@ function parseHTMLFile(html: string): IGUser[] {
   const parser = new DOMParser()
   const doc = parser.parseFromString(html, 'text/html')
   const users: IGUser[] = []
+  const seen = new Set<string>()
+
   for (const link of doc.querySelectorAll('a')) {
     const href = link.getAttribute('href') ?? ''
     if (!href.includes('instagram.com/')) continue
-    let username = href.split('instagram.com/')[1]?.replace(/\//g, '') ?? ''
-    if (username.startsWith('_u/')) username = username.slice(3)
-    if (!username || ['legal', 'explore', 'about', 'developer', 'help'].includes(username)) continue
+
+    // Extract path segment after instagram.com/
+    let part = href.split('instagram.com/')[1] ?? ''
+    // Strip _u/ prefix BEFORE removing slashes
+    if (part.startsWith('_u/')) part = part.slice(3)
+    // Take first path segment (the username), ignore trailing slashes and query params
+    const username = part.split('/')[0].split('?')[0].toLowerCase()
+
+    if (!username || seen.has(username)) continue
+    if (['legal', 'explore', 'about', 'developer', 'help', 'privacy', 'terms'].includes(username)) continue
+
+    seen.add(username)
     users.push({ username, href, timestamp: null })
   }
   return users
 }
 
+// Key fix: only check the FILE NAME (last segment), not the full path.
+// The zip folder is named "followers_and_following" which contains the word
+// "followers", so path-level checks incorrectly excluded following.json.
+function basename(path: string): string {
+  return path.split('/').pop() ?? path
+}
+
 export async function parseZip(file: File): Promise<ParsedData> {
   const zip = await JSZip.loadAsync(file)
+  const allPaths = Object.keys(zip.files).filter((p) => !zip.files[p].dir)
 
-  // Collect all follower JSON files (followers_1.json, followers_2.json, …)
-  const followerJsonFiles = Object.keys(zip.files).filter(
-    (name) => /followers_\d+\.json$/i.test(name)
-  )
-  const followingJsonFile = Object.keys(zip.files).find(
-    (name) => /following\.json$/i.test(name)
-  )
+  // JSON path
+  const followerJsonPaths = allPaths.filter((p) => /^followers_\d+\.json$/i.test(basename(p)))
+  const followingJsonPath = allPaths.find((p) => basename(p) === 'following.json')
 
-  if (followerJsonFiles.length > 0 && followingJsonFile) {
-    // JSON path
+  if (followerJsonPaths.length > 0 && followingJsonPath) {
     const followerEntries: RawEntry[] = []
-    for (const path of followerJsonFiles) {
-      const text = await zip.files[path].async('text')
-      const parsed = JSON.parse(text) as RawEntry[]
-      followerEntries.push(...parsed)
+    for (const path of followerJsonPaths) {
+      const raw = JSON.parse(await zip.files[path].async('text'))
+      followerEntries.push(...extractEntries(raw))
     }
-
-    const followingText = await zip.files[followingJsonFile].async('text')
-    // Following JSON is wrapped: { relationships_following: [...] }
-    const followingRaw = JSON.parse(followingText)
-    const followingEntries: RawEntry[] = Array.isArray(followingRaw)
-      ? followingRaw
-      : (followingRaw.relationships_following ?? [])
-
+    const followingEntries = extractEntries(JSON.parse(await zip.files[followingJsonPath].async('text')))
     return {
       followers: parseJSONEntries(followerEntries),
       following: parseJSONEntries(followingEntries),
@@ -73,23 +109,17 @@ export async function parseZip(file: File): Promise<ParsedData> {
   }
 
   // HTML fallback
-  const followerHtmlFiles = Object.keys(zip.files).filter(
-    (name) => /followers.*\.html$/i.test(name)
-  )
-  const followingHtmlFile = Object.keys(zip.files).find(
-    (name) => /following\.html$/i.test(name)
-  )
+  const followerHtmlPaths = allPaths.filter((p) => /^followers.*\.html$/i.test(basename(p)))
+  const followingHtmlPath = allPaths.find((p) => basename(p) === 'following.html')
 
-  if (followerHtmlFiles.length > 0 && followingHtmlFile) {
+  if (followerHtmlPaths.length > 0 && followingHtmlPath) {
     const followerUsers: IGUser[] = []
-    for (const path of followerHtmlFiles) {
-      const html = await zip.files[path].async('text')
-      followerUsers.push(...parseHTMLFile(html))
+    for (const path of followerHtmlPaths) {
+      followerUsers.push(...parseHTMLFile(await zip.files[path].async('text')))
     }
-    const followingHtml = await zip.files[followingHtmlFile].async('text')
     return {
       followers: followerUsers,
-      following: parseHTMLFile(followingHtml),
+      following: parseHTMLFile(await zip.files[followingHtmlPath].async('text')),
       hasTimestamps: false,
     }
   }
@@ -98,61 +128,39 @@ export async function parseZip(file: File): Promise<ParsedData> {
 }
 
 export function parseHTMLFiles(followerFiles: File[], followingFile: File): Promise<ParsedData> {
-  return new Promise((resolve, reject) => {
-    const readers: Promise<IGUser[]>[] = []
+  const read = (f: File) =>
+    new Promise<IGUser[]>((res, rej) => {
+      const reader = new FileReader()
+      reader.onload = (e) => res(parseHTMLFile(e.target?.result as string))
+      reader.onerror = rej
+      reader.readAsText(f)
+    })
 
-    const readFile = (f: File) =>
-      new Promise<IGUser[]>((res, rej) => {
-        const reader = new FileReader()
-        reader.onload = (e) => res(parseHTMLFile(e.target?.result as string))
-        reader.onerror = rej
-        reader.readAsText(f)
-      })
-
-    for (const f of [...followerFiles, followingFile]) {
-      readers.push(readFile(f))
-    }
-
-    Promise.all(readers)
-      .then((results) => {
-        const followerUsers = results.slice(0, followerFiles.length).flat()
-        const followingUsers = results[results.length - 1]
-        resolve({ followers: followerUsers, following: followingUsers, hasTimestamps: false })
-      })
-      .catch(reject)
-  })
+  return Promise.all([...followerFiles.map(read), read(followingFile)]).then((results) => ({
+    followers: results.slice(0, followerFiles.length).flat(),
+    following: results[results.length - 1],
+    hasTimestamps: false,
+  }))
 }
 
-export function parseJSONFiles(
-  followerFiles: File[],
-  followingFile: File
-): Promise<ParsedData> {
-  return new Promise((resolve, reject) => {
-    const readJSON = (f: File): Promise<RawEntry[]> =>
-      new Promise((res, rej) => {
-        const reader = new FileReader()
-        reader.onload = (e) => {
-          try {
-            const raw = JSON.parse(e.target?.result as string)
-            res(Array.isArray(raw) ? raw : (raw.relationships_following ?? []))
-          } catch {
-            rej(new Error('invalid_json'))
-          }
+export function parseJSONFiles(followerFiles: File[], followingFile: File): Promise<ParsedData> {
+  const readJSON = (f: File): Promise<RawEntry[]> =>
+    new Promise((res, rej) => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        try {
+          res(extractEntries(JSON.parse(e.target?.result as string)))
+        } catch {
+          rej(new Error('invalid_json'))
         }
-        reader.onerror = rej
-        reader.readAsText(f)
-      })
+      }
+      reader.onerror = rej
+      reader.readAsText(f)
+    })
 
-    Promise.all([...followerFiles.map(readJSON), readJSON(followingFile)])
-      .then((results) => {
-        const followerEntries = results.slice(0, followerFiles.length).flat()
-        const followingEntries = results[results.length - 1]
-        resolve({
-          followers: parseJSONEntries(followerEntries),
-          following: parseJSONEntries(followingEntries),
-          hasTimestamps: true,
-        })
-      })
-      .catch(reject)
-  })
+  return Promise.all([...followerFiles.map(readJSON), readJSON(followingFile)]).then((results) => ({
+    followers: parseJSONEntries(results.slice(0, followerFiles.length).flat()),
+    following: parseJSONEntries(results[results.length - 1]),
+    hasTimestamps: true,
+  }))
 }
