@@ -1,3 +1,15 @@
-*.html
+# Instagram data exports — never commit these
+followers_1.html
+following.html
+followers_1.json
+following.json
+
+# Python
 __pycache__/
 *.pyc
+
+# Node
+node_modules/
+dist/
+.env
+.env.local

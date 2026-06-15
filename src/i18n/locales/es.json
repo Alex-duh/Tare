@@ -1,0 +1,96 @@
+{
+  "nav": {
+    "about": "Acerca de",
+    "privacy": "Tus datos nunca salen de tu navegador"
+  },
+  "landing": {
+    "headline": "Pon a cero tus seguidores.",
+    "sub": "Descubre quién no te sigue de vuelta en Instagram. Sin inicio de sesión. Sin servidores. Todo corre en tu navegador.",
+    "upload_title": "Suelta tu exportación de Instagram aquí",
+    "upload_sub": "Acepta archivo .zip o archivos individuales followers_1.json + following.json",
+    "upload_cta": "Buscar archivos",
+    "upload_html_note": "También se aceptan archivos HTML — la pestaña Día Uno requiere exportación JSON",
+    "analyzing": "Analizando tus datos…",
+    "how_title": "Cómo obtener tus datos",
+    "how_sub": "Instagram te permite descargar tus propios datos. Aquí exactamente qué descargar.",
+    "steps": {
+      "1": "Abre Instagram → toca tu perfil → toca ☰ → toca Centro de Cuentas",
+      "2": "Toca \"Tu información y permisos\" → \"Descargar tu información\"",
+      "3": "Toca \"Descargar o transferir información\" → selecciona tu cuenta → \"Parte de tu información\"",
+      "4": "Desplázate a \"Conexiones\" → marca SOLO \"Seguidores y seguidos\" → desmarca todo lo demás",
+      "5": "Elige \"Descargar al dispositivo\" → establece Formato en JSON y Rango de fechas en Todo el tiempo → toca Descargar"
+    },
+    "steps_note": "Instagram te enviará un correo cuando esté listo (usualmente minutos). Descarga el .zip y suéltalo arriba.",
+    "analyzing": "Analizando tus datos…"
+  },
+  "results": {
+    "tab_overview": "Resumen",
+    "tab_notfollowing": "No te siguen de vuelta",
+    "tab_dayones": "Día Uno",
+    "tab_changes": "Cambios",
+    "new_analysis": "Nuevo análisis",
+    "overview": {
+      "followers": "Seguidores",
+      "following": "Siguiendo",
+      "ratio": "Ratio de seguimiento",
+      "not_following_back": "No te siguen de vuelta",
+      "fans": "Fans que no sigues"
+    },
+    "notfollowing": {
+      "title_a": "No te siguen de vuelta",
+      "title_b": "Fans que no sigues de vuelta",
+      "search": "Buscar usuarios…",
+      "sort_alpha": "A → Z",
+      "sort_oldest": "Más antiguos primero",
+      "sort_newest": "Más nuevos primero",
+      "open_profile": "Abrir perfil",
+      "empty": "Todos te siguen de vuelta 👏"
+    },
+    "dayones": {
+      "title": "Día Uno",
+      "sub": "Tus seguidores mutuos más antiguos, clasificados por cuánto tiempo se conocen.",
+      "loyalty_badge": "Top 10 Día Uno",
+      "since": "Mutuos desde",
+      "duration": "{{years}} años, {{days}} días",
+      "betrayed_title": "Te seguían desde el principio — ya no te siguen",
+      "betrayed_sub": "Personas a las que seguiste desde el comienzo y que eventualmente se fueron.",
+      "no_timestamps": "Día Uno requiere tus datos de Instagram en formato JSON.",
+      "no_timestamps_sub": "Vuelve a descargar tu exportación y elige JSON como formato para desbloquear esta pestaña.",
+      "empty_mutuals": "No se encontraron seguidores mutuos.",
+      "empty_betrayed": "Ninguno de tus primeros seguidos se fue — lealtad apreciada."
+    },
+    "changes": {
+      "title": "Cambios en el tiempo",
+      "baseline_title": "Esta es tu línea base.",
+      "baseline_sub": "Sube tu exportación de nuevo más tarde para ver quién te siguió o dejó de seguirte desde esta instantánea.",
+      "unfollowed_you": "Dejaron de seguirte",
+      "new_followers": "Nuevos seguidores",
+      "you_started": "Empezaste a seguir",
+      "you_stopped": "Dejaste de seguir",
+      "net_change": "Cambio neto de seguidores",
+      "history": "Historial de instantáneas",
+      "snapshot_label": "{{date}} — {{count}} seguidores",
+      "compare": "Comparar dos instantáneas",
+      "no_history": "No hay instantáneas anteriores.",
+      "storage_note": "Las instantáneas se almacenan solo en este navegador. Borrar los datos del sitio las elimina."
+    }
+  },
+  "privacy": {
+    "title": "Privacidad",
+    "body": "Tare funciona completamente en tu navegador. Tus archivos de exportación de Instagram nunca se cargan a ningún servidor. El único dato que sale de tu dispositivo es un contador anónimo (sin nombres de usuario, sin IDs). El historial de instantáneas vive en el almacenamiento IndexedDB de tu navegador.",
+    "close": "Entendido"
+  },
+  "legal": {
+    "terms": "Términos de uso",
+    "privacy": "Política de privacidad",
+    "cookies": "Política de cookies",
+    "terms_body": "Tare es una herramienta gratuita y de código abierto. Úsala bajo tu propio riesgo. No estamos afiliados con Instagram ni Meta.",
+    "privacy_body": "No recopilamos datos personales. Tus archivos de exportación de Instagram se procesan localmente en tu navegador y nunca se transmiten a nuestros servidores.",
+    "cookies_body": "Tare no usa cookies. Usamos IndexedDB para guardar tu historial de instantáneas localmente."
+  },
+  "errors": {
+    "no_valid_files": "No se pudieron encontrar los archivos de datos de Instagram. Asegúrate de subir el .zip de Instagram o los archivos followers_1.json y following.json.",
+    "invalid_json": "El archivo no parece ser JSON válido. Intenta volver a descargar tu exportación de Instagram.",
+    "generic": "Algo salió mal al leer tus archivos. Por favor, inténtalo de nuevo."
+  }
+}

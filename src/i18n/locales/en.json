@@ -1,0 +1,95 @@
+{
+  "nav": {
+    "about": "About",
+    "privacy": "Your data never leaves your browser"
+  },
+  "landing": {
+    "headline": "Zero out your followers.",
+    "sub": "Find who's not following you back on Instagram. No login. No server. Runs entirely in your browser.",
+    "upload_title": "Drop your Instagram export here",
+    "upload_sub": "Accepts .zip export or individual followers_1.json + following.json files",
+    "upload_cta": "Browse files",
+    "upload_html_note": "HTML files also accepted — Day Ones tab requires JSON export",
+    "analyzing": "Analyzing your data…",
+    "how_title": "How to get your data",
+    "how_sub": "Instagram lets you download your own data. Here's exactly what to grab.",
+    "steps": {
+      "1": "Open Instagram → tap your profile → tap ☰ → tap Account Center",
+      "2": "Tap \"Your information and permissions\" → \"Download your information\"",
+      "3": "Tap \"Download or transfer information\" → select your account → \"Some of your information\"",
+      "4": "Scroll to \"Connections\" → check ONLY \"Followers and following\" → uncheck everything else",
+      "5": "Choose \"Download to device\" → set Format to JSON and Date range to All time → tap Download"
+    },
+    "steps_note": "Instagram will email you when it's ready (usually minutes). Download the .zip and drop it above."
+  },
+  "results": {
+    "tab_overview": "Overview",
+    "tab_notfollowing": "Not Following Back",
+    "tab_dayones": "Day Ones",
+    "tab_changes": "Changes",
+    "new_analysis": "New Analysis",
+    "overview": {
+      "followers": "Followers",
+      "following": "Following",
+      "ratio": "Follow-back Ratio",
+      "not_following_back": "Not Following You Back",
+      "fans": "Fans You Don't Follow"
+    },
+    "notfollowing": {
+      "title_a": "Not following you back",
+      "title_b": "Fans you don't follow back",
+      "search": "Search usernames…",
+      "sort_alpha": "A → Z",
+      "sort_oldest": "Oldest first",
+      "sort_newest": "Newest first",
+      "open_profile": "Open profile",
+      "empty": "Everyone follows you back 👏"
+    },
+    "dayones": {
+      "title": "Day Ones",
+      "sub": "Your oldest mutual followers, ranked by how long you've known each other.",
+      "loyalty_badge": "Top 10 Day One",
+      "since": "Mutual since",
+      "duration": "{{years}} years, {{days}} days",
+      "betrayed_title": "Followed early — no longer following you",
+      "betrayed_sub": "People you followed from the beginning who eventually left.",
+      "no_timestamps": "Day Ones requires your Instagram data in JSON format.",
+      "no_timestamps_sub": "Re-download your export and choose JSON as the format to unlock this tab.",
+      "empty_mutuals": "No mutual followers found.",
+      "empty_betrayed": "None of your early follows left — loyalty appreciated."
+    },
+    "changes": {
+      "title": "Changes Over Time",
+      "baseline_title": "This is your baseline.",
+      "baseline_sub": "Upload your export again later to see who followed or unfollowed you since this snapshot.",
+      "unfollowed_you": "Unfollowed you",
+      "new_followers": "New followers",
+      "you_started": "You started following",
+      "you_stopped": "You stopped following",
+      "net_change": "Net follower change",
+      "history": "Snapshot history",
+      "snapshot_label": "{{date}} — {{count}} followers",
+      "compare": "Compare two snapshots",
+      "no_history": "No previous snapshots.",
+      "storage_note": "Snapshots are stored only in this browser. Clearing site data removes them."
+    }
+  },
+  "privacy": {
+    "title": "Privacy",
+    "body": "Tare runs entirely in your browser. Your Instagram export files are never uploaded to any server. The only data that leaves your device is a single anonymous counter ping (no usernames, no IDs) that lets us display how many total analyses have been run. Snapshot history lives in your browser's IndexedDB storage.",
+    "close": "Got it"
+  },
+  "legal": {
+    "terms": "Terms of Use",
+    "privacy": "Privacy Policy",
+    "cookies": "Cookies Policy",
+    "terms_body": "Tare is a free, open-source tool. Use it at your own risk. We are not affiliated with Instagram or Meta. Do not use this tool for harassment or misuse of others' follower data.",
+    "privacy_body": "We collect no personal data. Your Instagram export files are processed locally in your browser and are never transmitted to our servers. We record only an anonymous count of analyses run (no usernames, no account identifiers). Snapshot history is stored in your browser's local storage (IndexedDB) and never leaves your device.",
+    "cookies_body": "Tare does not use cookies. We use IndexedDB (a browser-local storage mechanism) to save your snapshot history. No third-party tracking cookies are set."
+  },
+  "errors": {
+    "no_valid_files": "Couldn't find Instagram data files. Make sure you upload the .zip from Instagram or the followers_1.json and following.json files.",
+    "invalid_json": "The file doesn't appear to be valid JSON. Try re-downloading your Instagram export.",
+    "generic": "Something went wrong reading your files. Please try again."
+  }
+}
