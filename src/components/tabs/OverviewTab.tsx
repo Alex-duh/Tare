@@ -29,6 +29,9 @@ function StatCard({ label, value, sub }: { label: string; value: string | number
 export default function OverviewTab({ data, notFollowingBack, fans }: Props) {
   const { t } = useTranslation()
   const [showShare, setShowShare] = useState(false)
+  const [username, setUsername] = useState(() =>
+    localStorage.getItem('tare_username') || data.accountUsername || ''
+  )
 
   const followerSet = useMemo(() => new Set(data.followers.map((u) => u.username)), [data])
   const followingSet = useMemo(() => new Set(data.following.map((u) => u.username)), [data])
@@ -79,18 +82,42 @@ export default function OverviewTab({ data, notFollowingBack, fans }: Props) {
         />
       </div>
 
-      <button
-        onClick={() => setShowShare(true)}
-        className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-medium text-white/60 hover:text-white transition-all"
-        style={{ border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.03)' }}
-      >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-          />
-        </svg>
-        Share your results
-      </button>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-2">
+          <div
+            className="flex items-center flex-1 rounded-xl overflow-hidden"
+            style={{ border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.03)' }}
+          >
+            <span className="pl-3 pr-1 text-sm text-white/30 select-none">@</span>
+            <input
+              type="text"
+              placeholder="your_handle"
+              value={username}
+              onChange={(e) => {
+                const val = e.target.value.replace(/^@+/, '')
+                setUsername(val)
+                localStorage.setItem('tare_username', val)
+              }}
+              className="flex-1 bg-transparent py-2.5 pr-3 text-sm text-white placeholder-white/20 outline-none"
+            />
+          </div>
+          <button
+            onClick={() => setShowShare(true)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-white transition-all whitespace-nowrap"
+            style={{ border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.03)' }}
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+              />
+            </svg>
+            Share results
+          </button>
+        </div>
+        {username && (
+          <p className="text-xs text-white/25 pl-1">Your handle will appear on the share card</p>
+        )}
+      </div>
 
       {showShare && (
         <ShareCard
@@ -100,6 +127,7 @@ export default function OverviewTab({ data, notFollowingBack, fans }: Props) {
           mutuals={mutuals.length}
           dayOnesLeft={dayOnesLeft}
           hasTimestamps={data.hasTimestamps}
+          username={username}
           onClose={() => setShowShare(false)}
         />
       )}
@@ -107,7 +135,7 @@ export default function OverviewTab({ data, notFollowingBack, fans }: Props) {
       {data.hasTimestamps && (
         <>
           <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)' }} />
-          <GrowthGraph followers={data.followers} following={data.following} />
+          <GrowthGraph followers={data.followers} following={data.following} username={username} />
         </>
       )}
     </div>

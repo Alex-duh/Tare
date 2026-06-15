@@ -9,6 +9,7 @@ interface Props {
   mutuals: number
   dayOnesLeft: number
   hasTimestamps: boolean
+  username?: string
   onClose: () => void
 }
 
@@ -81,6 +82,7 @@ export default function ShareCard({
   mutuals,
   dayOnesLeft,
   hasTimestamps,
+  username,
   onClose,
 }: Props) {
   const posthog = usePostHog()
@@ -229,11 +231,24 @@ export default function ShareCard({
       ctx.fillText(stat.label, x + 28, y + 124)
     })
 
-    // Domain — bottom center, large
-    ctx.font = 'bold 34px Inter, system-ui, sans-serif'
-    ctx.fillStyle = 'rgba(255,255,255,0.22)'
+    // Username — diagonal stamp centered in blank right-side space
+    const handle = username ? `@${username.replace(/^@/, '')}` : null
+    if (handle) {
+      ctx.save()
+      ctx.translate(800, 290)
+      ctx.rotate(0.23)
+      ctx.textAlign = 'center'
+      ctx.font = 'bold 64px Inter, system-ui, sans-serif'
+      ctx.fillStyle = 'rgba(255,255,255,0.88)'
+      ctx.fillText(handle, 0, 0)
+      ctx.restore()
+    }
+
+    // Domain — bottom center watermark
     ctx.textAlign = 'center'
-    ctx.fillText('usetare.vercel.app', W / 2, H - 48)
+    ctx.font = 'bold 28px Inter, system-ui, sans-serif'
+    ctx.fillStyle = 'rgba(255,255,255,0.18)'
+    ctx.fillText('usetare.vercel.app', W / 2, H - 38)
     ctx.textAlign = 'left'
 
     return canvas.toDataURL('image/png')
@@ -244,7 +259,7 @@ export default function ShareCard({
       const url = renderCanvas()
       if (url) setPreviewUrl(url)
     })
-  }, [])
+  }, [username])
 
   const downloadCard = () => {
     const url = renderCanvas()

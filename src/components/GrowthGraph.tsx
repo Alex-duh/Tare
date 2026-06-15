@@ -60,9 +60,10 @@ const PLOT_H = VB_H - PAD.top - PAD.bottom
 interface Props {
   followers: IGUser[]
   following: IGUser[]
+  username?: string
 }
 
-export default function GrowthGraph({ followers, following }: Props) {
+export default function GrowthGraph({ followers, following, username }: Props) {
   const svgRef = useRef<SVGSVGElement>(null)
   const exportCanvasRef = useRef<HTMLCanvasElement>(null)
   const [timeSpan, setTimeSpan] = useState<TimeSpan>('all')
@@ -172,11 +173,24 @@ export default function GrowthGraph({ followers, following }: Props) {
       112
     )
 
-    // Domain
-    ctx.font = 'bold 20px Inter, system-ui, sans-serif'
-    ctx.fillStyle = 'rgba(255,255,255,0.18)'
+    // Username — diagonal stamp centered in top-right blank space
+    const handle = username ? `@${username.replace(/^@/, '')}` : null
+    if (handle) {
+      ctx.save()
+      ctx.translate(950, 90)
+      ctx.rotate(0.23)
+      ctx.textAlign = 'center'
+      ctx.font = 'bold 36px Inter, system-ui, sans-serif'
+      ctx.fillStyle = 'rgba(255,255,255,0.88)'
+      ctx.fillText(handle, 0, 0)
+      ctx.restore()
+    }
+
+    // Domain — bottom center watermark
     ctx.textAlign = 'center'
-    ctx.fillText('usetare.vercel.app', W / 2, H - 18)
+    ctx.font = 'bold 18px Inter, system-ui, sans-serif'
+    ctx.fillStyle = 'rgba(255,255,255,0.15)'
+    ctx.fillText('usetare.vercel.app', W / 2, H - 14)
     ctx.textAlign = 'left'
 
     // Serialize SVG and draw it

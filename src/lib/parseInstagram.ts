@@ -86,9 +86,22 @@ function basename(path: string): string {
   return path.split('/').pop() ?? path
 }
 
+async function extractAccountUsername(zip: JSZip, allPaths: string[]): Promise<string | undefined> {
+  const infoPath = allPaths.find((p) => basename(p) === 'personal_information.json')
+  if (!infoPath) return undefined
+  try {
+    const raw = JSON.parse(await zip.files[infoPath].async('text'))
+    return raw?.profile_user?.[0]?.string_map_data?.Username?.value || undefined
+  } catch {
+    return undefined
+  }
+}
+
 export async function parseZip(file: File): Promise<ParsedData> {
   const zip = await JSZip.loadAsync(file)
   const allPaths = Object.keys(zip.files).filter((p) => !zip.files[p].dir)
+
+  const accountUsername = await extractAccountUsername(zip, allPaths)
 
   // JSON path
   const followerJsonPaths = allPaths.filter((p) => /^followers_\d+\.json$/i.test(basename(p)))
@@ -105,6 +118,7 @@ export async function parseZip(file: File): Promise<ParsedData> {
       followers: parseJSONEntries(followerEntries),
       following: parseJSONEntries(followingEntries),
       hasTimestamps: true,
+      accountUsername,
     }
   }
 
@@ -121,6 +135,7 @@ export async function parseZip(file: File): Promise<ParsedData> {
       followers: followerUsers,
       following: parseHTMLFile(await zip.files[followingHtmlPath].async('text')),
       hasTimestamps: false,
+      accountUsername,
     }
   }
 

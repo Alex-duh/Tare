@@ -8,6 +8,7 @@ export interface ParsedData {
   followers: IGUser[]
   following: IGUser[]
   hasTimestamps: boolean
+  accountUsername?: string
 }
 
 export interface Snapshot {
