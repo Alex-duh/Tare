@@ -17,7 +17,7 @@
       "1": "Open Instagram → tap your profile → tap ☰ → tap Account Center",
       "2": "Tap \"Your information and permissions\" → \"Export your information\"",
       "3": "Tap \"Create export\" → select your account → \"Export to device\"",
-      "4": "Tap \"Customize Information\" → select ONLY \"Followers and following\" → uncheck everything else → set Date range to Last year → set Format to JSON",
+      "4": "Tap \"Customize Information\" → select ONLY \"Followers and following\" → uncheck everything else → set Date range to All time → set Format to JSON",
       "5": "Tap \"Start export\" — Instagram will email you when it's ready. Download the zip file and drop it above."
     },
     "steps_note": "Export usually takes a few minutes."

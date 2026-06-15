@@ -17,7 +17,7 @@
       "1": "Abre Instagram → toca tu perfil → toca ☰ → toca Centro de Cuentas",
       "2": "Toca \"Tu información y permisos\" → \"Exportar tu información\"",
       "3": "Toca \"Crear exportación\" → selecciona tu cuenta → \"Exportar al dispositivo\"",
-      "4": "Toca \"Personalizar información\" → selecciona SOLO \"Seguidores y seguidos\" → desmarca todo lo demás → establece Rango de fechas en Último año → establece Formato en JSON",
+      "4": "Toca \"Personalizar información\" → selecciona SOLO \"Seguidores y seguidos\" → desmarca todo lo demás → establece Rango de fechas en Todo el tiempo → establece Formato en JSON",
       "5": "Toca \"Iniciar exportación\" — Instagram te enviará un correo cuando esté listo. Descarga el zip y suéltalo arriba."
     },
     "steps_note": "La exportación suele tardar unos minutos.",
