@@ -173,14 +173,19 @@ export default function GrowthGraph({ followers, following, username }: Props) {
       112
     )
 
-    // Username — diagonal stamp centered in top-right blank space
+    // Username — diagonal stamp near center of graph header
     const handle = username ? `@${username.replace(/^@/, '')}` : null
     if (handle) {
       ctx.save()
-      ctx.translate(950, 90)
-      ctx.rotate(0.23)
+      ctx.translate(650, 90)
+      ctx.rotate(-0.23)
       ctx.textAlign = 'center'
-      ctx.font = 'bold 36px Inter, system-ui, sans-serif'
+      let stampSize = 36
+      ctx.font = `bold ${stampSize}px Inter, system-ui, sans-serif`
+      while (ctx.measureText(handle).width > 300 && stampSize > 16) {
+        stampSize -= 2
+        ctx.font = `bold ${stampSize}px Inter, system-ui, sans-serif`
+      }
       ctx.fillStyle = 'rgba(255,255,255,0.88)'
       ctx.fillText(handle, 0, 0)
       ctx.restore()

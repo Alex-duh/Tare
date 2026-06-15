@@ -238,7 +238,12 @@ export default function ShareCard({
       ctx.translate(800, 290)
       ctx.rotate(0.23)
       ctx.textAlign = 'center'
-      ctx.font = 'bold 64px Inter, system-ui, sans-serif'
+      let stampSize = 64
+      ctx.font = `bold ${stampSize}px Inter, system-ui, sans-serif`
+      while (ctx.measureText(handle).width > 400 && stampSize > 24) {
+        stampSize -= 4
+        ctx.font = `bold ${stampSize}px Inter, system-ui, sans-serif`
+      }
       ctx.fillStyle = 'rgba(255,255,255,0.88)'
       ctx.fillText(handle, 0, 0)
       ctx.restore()
